@@ -6,11 +6,12 @@ import { useTheme } from "styled-components";
 
 import { Dashboard } from "../screens/Dashboard";
 import { Register } from "../screens/Register";
+import { Summary } from "../screens/Summary";
 
 export type AppRoutesParamList = {
   Listagem: undefined;
   Cadastrar: undefined;
-  Resumo: undefined;
+  Summary: undefined;
 };
 
 const { Navigator, Screen } = createBottomTabNavigator<AppRoutesParamList>();
@@ -60,8 +61,8 @@ export const AppRoutes = () => {
         }}
       />
       <Screen
-        name="Resumo"
-        component={Register}
+        name="Summary"
+        component={Summary}
         options={{
           tabBarIcon: ({ size, color }) => (
             <MaterialIcons name="pie-chart" size={size} color={color} />
