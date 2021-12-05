@@ -7,7 +7,6 @@ import {
   Icon,
   Footer,
   Amount,
-  AmountCents,
   LastTransaction,
 } from "./styles";
 
@@ -38,9 +37,6 @@ export const HighlightCard = ({
       </Header>
 
       <Footer>
-        {/* <Amount type={type}>
-          R$ 17.400<AmountCents type={type}>,00</AmountCents>
-        </Amount> */}
         <Amount type={type}>{amount}</Amount>
         <LastTransaction type={type}>{lastTransaction}</LastTransaction>
       </Footer>

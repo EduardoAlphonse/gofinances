@@ -48,13 +48,6 @@ export const Amount = styled.Text<TypeProps>`
     type === "total" ? theme.colors.shape : theme.colors.title};
 `;
 
-export const AmountCents = styled.Text<TypeProps>`
-  font-family: ${({ theme }) => theme.fonts.regular};
-  font-size: ${RFValue(32)}px;
-  color: ${({ type, theme }) =>
-    type === "total" ? theme.colors.shape : theme.colors.title};
-`;
-
 export const LastTransaction = styled.Text<TypeProps>`
   font-family: ${({ theme }) => theme.fonts.regular};
   font-size: ${RFValue(12)}px;
