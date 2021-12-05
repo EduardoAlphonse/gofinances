@@ -35,6 +35,7 @@ export interface DataListProps extends TransactionCardData {
 
 interface HighlightProps {
   amount: string;
+  lastTransactionDate: string;
 }
 interface HighlightData {
   earnings: HighlightProps;
@@ -50,6 +51,25 @@ export const Dashboard = () => {
   );
 
   const { colors } = useTheme();
+
+  const getLastTransactionDate = (
+    transactions: DataListProps[],
+    type: "up" | "down"
+  ) => {
+    const lastTransactionsDate = Math.max.apply(
+      Math,
+      transactions
+        .filter((transaction) => transaction.type === type)
+        .map((transaction) => new Date(transaction.date).getTime())
+    );
+
+    const lastTransactionsDateFormatted = Intl.DateTimeFormat("pt-BR", {
+      day: "2-digit",
+      month: "long",
+    }).format(lastTransactionsDate);
+
+    return lastTransactionsDateFormatted;
+  };
 
   const loadTransactions = async () => {
     const response = await AsyncStorage.getItem(COLLECTION_TRANSACTIONS);
@@ -89,6 +109,17 @@ export const Dashboard = () => {
     );
 
     setTransactions(formattedTransactions);
+
+    const lastEarningTransactionDate = getLastTransactionDate(
+      transactions,
+      "up"
+    );
+    const lastExpenseTransactionDate = getLastTransactionDate(
+      transactions,
+      "down"
+    );
+    const totalDateRange = `01 à ${lastEarningTransactionDate}.`;
+
     setHighlightData({
       earnings: {
         amount: earnings.toLocaleString("pt-BR", {
@@ -96,18 +127,21 @@ export const Dashboard = () => {
           currency: "BRL",
           compactDisplay: "",
         }),
+        lastTransactionDate: `Última entrada dia ${lastEarningTransactionDate}.`,
       },
       expenses: {
         amount: expenses.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
+        lastTransactionDate: `Última saída dia ${lastExpenseTransactionDate}.`,
       },
       total: {
         amount: (earnings - expenses).toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
+        lastTransactionDate: totalDateRange,
       },
     });
 
@@ -116,7 +150,7 @@ export const Dashboard = () => {
 
   useEffect(() => {
     loadTransactions();
-  }, [highlightData]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -155,19 +189,19 @@ export const Dashboard = () => {
               type="up"
               title="Entradas"
               amount={highlightData.earnings.amount}
-              lastTransaction="Última entrada dia 13 de abril"
+              lastTransaction={highlightData.earnings.lastTransactionDate}
             />
             <HighlightCard
               type="down"
               title="Saídas"
               amount={highlightData.expenses.amount}
-              lastTransaction="Última saída dia 3 de abril"
+              lastTransaction={highlightData.expenses.lastTransactionDate}
             />
             <HighlightCard
               type="total"
               title="Total"
               amount={highlightData.total.amount}
-              lastTransaction="01 à 16 de Abril"
+              lastTransaction={highlightData.total.lastTransactionDate}
             />
           </HighlightCards>
 
