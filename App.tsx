@@ -17,6 +17,8 @@ import { AppRoutes } from "./src/routes/app.routes";
 
 import { SignIn } from "./src/screens/SignIn";
 
+import { AuthProvider } from "./src/hooks/auth";
+
 import { theme } from "./src/global/styles/theme";
 
 const App = () => {
@@ -40,7 +42,10 @@ const App = () => {
         />
 
         {/* <AppRoutes /> */}
-        <SignIn />
+
+        <AuthProvider>
+          <SignIn />
+        </AuthProvider>
       </NavigationContainer>
     </ThemeProvider>
   );
