@@ -152,7 +152,7 @@ export const Summary = () => {
                 }}
                 x="percent"
                 y="totalRaw"
-                labelRadius={50}
+                labelRadius={90}
               />
             </ChartContainer>
 
