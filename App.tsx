@@ -15,6 +15,8 @@ import {
 import { NavigationContainer } from "@react-navigation/native";
 import { AppRoutes } from "./src/routes/app.routes";
 
+import { SignIn } from "./src/screens/SignIn";
+
 import { theme } from "./src/global/styles/theme";
 
 const App = () => {
@@ -37,7 +39,8 @@ const App = () => {
           translucent
         />
 
-        <AppRoutes />
+        {/* <AppRoutes /> */}
+        <SignIn />
       </NavigationContainer>
     </ThemeProvider>
   );
