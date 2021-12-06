@@ -11,7 +11,7 @@ import { Summary } from "../screens/Summary";
 export type AppRoutesParamList = {
   Listagem: undefined;
   Cadastrar: undefined;
-  Summary: undefined;
+  Resumo: undefined;
 };
 
 const { Navigator, Screen } = createBottomTabNavigator<AppRoutesParamList>();
@@ -61,7 +61,7 @@ export const AppRoutes = () => {
         }}
       />
       <Screen
-        name="Summary"
+        name="Resumo"
         component={Summary}
         options={{
           tabBarIcon: ({ size, color }) => (

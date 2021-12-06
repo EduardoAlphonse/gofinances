@@ -1,14 +1,13 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/core";
-import { useTheme } from "styled-components";
-import { ActivityIndicator } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { HighlightCard } from "../../components/HighlightCard";
 import {
   TransactionCard,
   TransactionCardData,
 } from "../../components/TransactionCard";
+import { HighlightCard } from "../../components/HighlightCard";
+import { Loading } from "../../components/Loading";
 import { COLLECTION_TRANSACTIONS } from "../../config/database";
 
 import {
@@ -26,7 +25,6 @@ import {
   Title,
   TransactionList,
   LogoutButton,
-  LoadContainer,
 } from "./styles";
 
 export interface DataListProps extends TransactionCardData {
@@ -50,30 +48,52 @@ export const Dashboard = () => {
     {} as HighlightData
   );
 
-  const { colors } = useTheme();
+  const getMaxTimestamp = (timestamp: number[]) => {
+    return Math.max.apply(Math, timestamp);
+  };
+
+  const getFormattedDate = (timestamp: number) => {
+    return Intl.DateTimeFormat("pt-BR", {
+      day: "2-digit",
+      month: "long",
+    }).format(timestamp);
+  };
 
   const getLastTransactionDate = (
     transactions: DataListProps[],
-    type: "up" | "down"
+    type: "up" | "down" | "total"
   ) => {
-    const lastTransactionsDate = Math.max.apply(
-      Math,
-      transactions
-        .filter((transaction) => transaction.type === type)
-        .map((transaction) => new Date(transaction.date).getTime())
-    );
+    if (type === "total") {
+      const filteredTransactionsTime = transactions.map((transaction) =>
+        new Date(transaction.date).getTime()
+      );
 
-    const lastTransactionsDateFormatted = Intl.DateTimeFormat("pt-BR", {
-      day: "2-digit",
-      month: "long",
-    }).format(lastTransactionsDate);
+      const lastTransactionDate = getMaxTimestamp(filteredTransactionsTime);
+
+      const lastTransactionDateFormatted =
+        getFormattedDate(lastTransactionDate);
+
+      return lastTransactionDateFormatted;
+    }
+
+    const filteredTransactionsTimeByType = transactions
+      .filter((transaction) => transaction.type === type)
+      .map((transaction) => new Date(transaction.date).getTime());
+
+    if (filteredTransactionsTimeByType.length === 0) {
+      return "";
+    }
+
+    const lastTransactionDate = getMaxTimestamp(filteredTransactionsTimeByType);
+
+    const lastTransactionsDateFormatted = getFormattedDate(lastTransactionDate);
 
     return lastTransactionsDateFormatted;
   };
 
   const loadTransactions = async () => {
     const response = await AsyncStorage.getItem(COLLECTION_TRANSACTIONS);
-    const transactions = response ? JSON.parse(response) : [];
+    const transactions: any[] = response ? JSON.parse(response) : [];
 
     let earnings = 0;
     let expenses = 0;
@@ -118,30 +138,38 @@ export const Dashboard = () => {
       transactions,
       "down"
     );
-    const totalDateRange = `01 à ${lastEarningTransactionDate}.`;
+    const lastTransactionDateFormatted = getLastTransactionDate(
+      transactions,
+      "total"
+    );
 
     setHighlightData({
       earnings: {
         amount: earnings.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
-          compactDisplay: "",
         }),
-        lastTransactionDate: `Última entrada dia ${lastEarningTransactionDate}.`,
+        lastTransactionDate: lastEarningTransactionDate
+          ? `Última entrada dia ${lastEarningTransactionDate}.`
+          : "Nenhuma entrada cadastrada.",
       },
       expenses: {
         amount: expenses.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
-        lastTransactionDate: `Última saída dia ${lastExpenseTransactionDate}.`,
+        lastTransactionDate: lastExpenseTransactionDate
+          ? `Última saída dia ${lastExpenseTransactionDate}.`
+          : "Nenhuma saída cadastrada.",
       },
       total: {
         amount: (earnings - expenses).toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
-        lastTransactionDate: totalDateRange,
+        lastTransactionDate: lastTransactionDateFormatted
+          ? `01 à ${lastTransactionDateFormatted}.`
+          : "Ainda não há transações cadastradas.",
       },
     });
 
@@ -161,9 +189,7 @@ export const Dashboard = () => {
   return (
     <Container>
       {isLoading ? (
-        <LoadContainer>
-          <ActivityIndicator size="large" color={colors.primary} />
-        </LoadContainer>
+        <Loading />
       ) : (
         <>
           <Header>
