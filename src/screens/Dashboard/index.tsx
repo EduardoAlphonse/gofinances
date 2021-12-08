@@ -66,11 +66,11 @@ export const Dashboard = () => {
 
   const getLastTransactionDate = (
     transactions: DataListProps[],
-    type: "up" | "down" | "total"
+    type?: "up" | "down"
   ) => {
-    if (type === "total") {
-      if (transactions.length <= 0) return "";
+    if (transactions.length === 0) return 0;
 
+    if (!type) {
       const filteredTransactionsTime = transactions.map((transaction) =>
         new Date(transaction.date).getTime()
       );
@@ -91,7 +91,6 @@ export const Dashboard = () => {
     }
 
     const lastTransactionDate = getMaxTimestamp(filteredTransactionsTimeByType);
-
     const lastTransactionsDateFormatted = getFormattedDate(lastTransactionDate);
 
     return lastTransactionsDateFormatted;
@@ -146,10 +145,7 @@ export const Dashboard = () => {
       transactions,
       "down"
     );
-    const lastTransactionDateFormatted = getLastTransactionDate(
-      transactions,
-      "total"
-    );
+    const lastTransactionDateFormatted = getLastTransactionDate(transactions);
 
     setHighlightData({
       earnings: {
