@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { Modal, TouchableWithoutFeedback, Keyboard, Alert } from "react-native";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as Yup from "yup";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import uuid from "react-native-uuid";
+import * as Yup from "yup";
 
 import { useForm } from "react-hook-form";
 import { useNavigation } from "@react-navigation/native";
-import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { useAuth } from "../../hooks/auth";
+
 import { AppRoutesParamList } from "../../router/app.routes";
 
 import { Header } from "../../components/Header";
@@ -18,7 +20,7 @@ import { TransactionTypeButton } from "../../components/Form/TransactionTypeButt
 import { CategorySelectButton } from "../../components/Form/CategorySelectButton";
 import { CategoryData } from "../CategorySelect";
 
-import { COLLECTION_TRANSACTIONS } from "../../config/database";
+import { storage } from "../../config/database";
 
 import { Container, Form, Fields, TransactionTypes } from "./styles";
 
@@ -46,6 +48,7 @@ export const Register = () => {
   const [category, setCategory] = useState<CategoryData>({} as CategoryData);
 
   const navigation = useNavigation<RegisterNavigationProps>();
+  const { user } = useAuth();
 
   const {
     control,
@@ -83,13 +86,13 @@ export const Register = () => {
     };
 
     try {
-      const data = await AsyncStorage.getItem(COLLECTION_TRANSACTIONS);
+      const data = await AsyncStorage.getItem(storage.transactionsKey(user.id));
       const currentData = data ? JSON.parse(data) : [];
 
       const dataFormatted = [newTransaction, ...currentData];
 
       await AsyncStorage.setItem(
-        COLLECTION_TRANSACTIONS,
+        storage.transactionsKey(user.id),
         JSON.stringify(dataFormatted)
       );
 

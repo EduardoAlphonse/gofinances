@@ -4,13 +4,15 @@ import { VictoryPie } from "victory-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { addMonths, subMonths, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+
 import { useTheme } from "styled-components";
+import { useAuth } from "../../hooks/auth";
 
 import { Header } from "../../components/Header";
 import { HistoryCard } from "../../components/HistoryCard";
 import { Loading } from "../../components/Loading";
 
-import { COLLECTION_TRANSACTIONS } from "../../config/database";
+import { storage } from "../../config/database";
 import { categories } from "../../utils/categories";
 
 import {
@@ -49,6 +51,7 @@ export const Summary = () => {
   );
 
   const { colors } = useTheme();
+  const { user } = useAuth();
 
   const handleDateChange = (action: "next" | "previous") => {
     if (action === "next") {
@@ -61,7 +64,7 @@ export const Summary = () => {
   const loadDdata = async () => {
     setIsLoading(true);
 
-    const response = await AsyncStorage.getItem(COLLECTION_TRANSACTIONS);
+    const response = await AsyncStorage.getItem(storage.transactionsKey(user.id));
     const formattedResponse = response ? JSON.parse(response) : [];
 
     const expenses: TransactionData[] = formattedResponse.filter(

@@ -11,7 +11,7 @@ import {
 import { HighlightCard } from "../../components/HighlightCard";
 import { Loading } from "../../components/Loading";
 
-import { COLLECTION_TRANSACTIONS } from "../../config/database";
+import { storage } from "../../config/database";
 
 import {
   Container,
@@ -98,7 +98,9 @@ export const Dashboard = () => {
   };
 
   const loadTransactions = async () => {
-    const response = await AsyncStorage.getItem(COLLECTION_TRANSACTIONS);
+    const response = await AsyncStorage.getItem(
+      storage.transactionsKey(user.id)
+    );
     const transactions: any[] = response ? JSON.parse(response) : [];
 
     let earnings = 0;

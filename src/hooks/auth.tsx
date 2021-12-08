@@ -9,7 +9,7 @@ import * as AuthSession from "expo-auth-session";
 import * as AppleAuthentication from "expo-apple-authentication";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { COLLECTION_USER } from "../config/database";
+import { storage } from "../config/database";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -73,7 +73,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
         setUser(user);
 
-        await AsyncStorage.setItem(COLLECTION_USER, JSON.stringify(user));
+        await AsyncStorage.setItem(storage.userKey, JSON.stringify(user));
       }
     } catch (error) {
       throw new Error(error as string);
@@ -102,7 +102,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
         setUser(loggedUser);
 
-        await AsyncStorage.setItem(COLLECTION_USER, JSON.stringify(loggedUser));
+        await AsyncStorage.setItem(storage.userKey, JSON.stringify(loggedUser));
       }
     } catch (error) {
       throw new Error(error as string);
@@ -111,12 +111,12 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signOut = async () => {
     setUser({} as User);
-    await AsyncStorage.removeItem(COLLECTION_USER);
+    await AsyncStorage.removeItem(storage.userKey);
   };
 
   useEffect(() => {
     const loadUserStoredData = async () => {
-      const userStored = await AsyncStorage.getItem(COLLECTION_USER);
+      const userStored = await AsyncStorage.getItem(storage.userKey);
 
       if (userStored) {
         const loggedUser = JSON.parse(userStored) as User;
