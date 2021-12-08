@@ -1,13 +1,15 @@
-import React, { useContext } from "react";
+import React, { useState } from "react";
+import { Alert } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 
 import AppleSvg from "../../assets/apple.svg";
 import GoogleSvg from "../../assets/google.svg";
 import LogoSvg from "../../assets/logo.svg";
 
-import { useAuth } from "../../hooks/auth";
-
 import { SignInSocialButton } from "../../components/SignInSocialButton";
+import { Loading } from "../../components/Loading";
+
+import { useAuth } from "../../hooks/auth";
 
 import {
   Container,
@@ -20,8 +22,32 @@ import {
 } from "./styles";
 
 export const SignIn = () => {
-  const { user } = useAuth();
-  console.log(user);
+  const [isLoading, setIsLoading] = useState(false);
+  const { signInWithGoogle, signInWithApple } = useAuth();
+
+  const handleSignInWithGoogle = async () => {
+    try {
+      setIsLoading(true);
+      return await signInWithGoogle();
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Não foi possível conectar à conta Google.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSignInWithApple = async () => {
+    try {
+      setIsLoading(true);
+      return await signInWithApple();
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Não foi possível conectar à conta Apple.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Container>
@@ -38,9 +64,19 @@ export const SignIn = () => {
 
       <Footer>
         <FooterWrapper>
-          <SignInSocialButton title="Google" svg={GoogleSvg} />
-          <SignInSocialButton title="Apple" svg={AppleSvg} />
+          <SignInSocialButton
+            onPress={handleSignInWithGoogle}
+            title="Google"
+            svg={GoogleSvg}
+          />
+          <SignInSocialButton
+            onPress={handleSignInWithApple}
+            title="Apple"
+            svg={AppleSvg}
+          />
         </FooterWrapper>
+
+        {isLoading && <Loading />}
       </Footer>
     </Container>
   );

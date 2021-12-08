@@ -8,7 +8,7 @@ import uuid from "react-native-uuid";
 import { useForm } from "react-hook-form";
 import { useNavigation } from "@react-navigation/native";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { AppRoutesParamList } from "../../routes/app.routes";
+import { AppRoutesParamList } from "../../router/app.routes";
 
 import { Header } from "../../components/Header";
 import { CategorySelect } from "../CategorySelect";
@@ -125,6 +125,7 @@ export const Register = () => {
               control={control}
               name="amount"
               error={errors.amount && errors.amount.message}
+              autoCompleteType="off"
             />
 
             <TransactionTypes>
